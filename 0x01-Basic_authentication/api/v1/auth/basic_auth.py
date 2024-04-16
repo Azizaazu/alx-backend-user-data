@@ -14,22 +14,6 @@ class BasicAuth(Auth):
     """
     class BasicAuth
     """
-    def __init__(self, database_file: str):
-        self.database_file = database_file
-
-        def user_object_from_credentials(self, user_email: str, user_pwd: str) -> Optional[T]:
-            if not isinstance(user_email, str) or not isinstance(user_pwd, str):
-                return None
-
-            user = User.search(user_email, self.database_file)
-
-            if user is None:
-                return None
-
-            if not user.is_valid_password(user_pwd):
-                return None
-
-            return user
 
     def extract_base64_authorization_header(
             self, authorization_header: str) -> str:
