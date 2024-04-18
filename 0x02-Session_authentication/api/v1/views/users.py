@@ -22,7 +22,7 @@ def view_one_user(user_id: str = None) -> str:
     Return:
       - User ob
     """
-     if user_id == "me":
+    if user_id == "me":
         if not request.current_user:
             abort(404)
         else:
@@ -34,14 +34,15 @@ def view_one_user(user_id: str = None) -> str:
         abort(404)
     return jsonify(user.to_json())
 
+
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
 def delete_user(user_id: str = None) -> str:
     """ DELETE /api/v1/users/:id
     Path parameter:
       - User ID
     Return:
-      - empty JSON 
-      - 404 
+      - empty JSON
+      - 404
     """
     if user_id is None:
         abort(404)
@@ -53,7 +54,6 @@ def delete_user(user_id: str = None) -> str:
 
 
 @app_views.route('/users', methods=['POST'], strict_slashes=False)
-
 def create_user() -> str:
     """ POST /api/v1/users/
     JSON body:
