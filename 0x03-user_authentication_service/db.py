@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """ DB module
 """
-
-
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -34,7 +32,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-     def add_user(self, email: str, hashed_password: str) -> User:
+    def add_user(self, email: str, hashed_password: str) -> User:
         """
         Add a new user to the database.
         """
@@ -62,16 +60,16 @@ class DB:
                     return usr
         raise NoResultFound
 
-     def update_user(self, user_id: int, **kwargs) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """
         Update user attributes based on keyword arguments.
 
         Args:
             user_id (int): ID of the user to update.
-            **kwargs: Arbitrary keyword arguments for updating user attributes.
+            **kwargs: Arbitrary keyword arguments for updating usr
 
         Raises:
-            ValueError: If an argument that does not correspond to a user attribute is passed.
+            ValueError
         """
         user = self.find_user_by(id=user_id)
         for key, value in kwargs.items():
