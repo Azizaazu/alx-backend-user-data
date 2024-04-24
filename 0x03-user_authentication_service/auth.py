@@ -3,6 +3,18 @@
 Main file
 """
 import bcrypt
+from uuid import uuid4
+from sqlalchemy.orm.exc import NoResultFound
+from typing import (
+    TypeVar,
+    Union
+)
+
+from db import DB
+from user import User
+
+U = TypeVar(User)
+
 
 def _hash_password(password: str) -> bytes:
     """
@@ -17,7 +29,8 @@ def _hash_password(password: str) -> bytes:
     passwd = password.encode('utf-8')
     return bcrypt.hashpw(passwd, bcrypt.gensalt())
 
-    def _generate_uuid() -> str:
+
+def _generate_uuid() -> str:
     """
     Generate a uuid and return its string representation
     """
@@ -27,7 +40,6 @@ def _hash_password(password: str) -> bytes:
 class Auth:
     """Auth class to interact with the authentication database.
     """
-
     def __init__(self) -> None:
         self._db = DB()
 
@@ -38,7 +50,7 @@ class Auth:
             email (str): new user's email address
             password (str): new user's password
         Return:
-            if no user with given email exists, return newly created user
+            if no user with given email exists, return
             else raise ValueError
         """
         try:
@@ -49,9 +61,9 @@ class Auth:
             return usr
         raise ValueError(f"User {email} already exists")
 
-     def valid_login(self, email: str, password: str) -> bool:
+    def valid_login(self, email: str, password: str) -> bool:
         """
-        Validate a user's login credentials and return True if they are correct
+        Validate a user's login credentials and return True
         or False if they are not
         Args:
             email (str): user's email address
