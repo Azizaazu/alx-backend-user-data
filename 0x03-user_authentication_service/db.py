@@ -7,8 +7,12 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
-
+from typing import TypeVar
 from user import Base, User
+
+
+VALID_FIELDS = ['id', 'email', 'hashed_password', 'session_id',
+                'reset_token']
 
 
 class DB:
@@ -44,37 +48,23 @@ class DB:
     def find_user_by(self, **kwargs) -> User:
         """
         Find a user by given keyword arguments.
-
-        Args:
-            **kwargs: Arbitrary keyword arguments for filtering.
-
-        Return:
-            matching user or raise error
         """
-        all_users = self._session.query(User)
-        for k, v in kwargs.items():
-            if k not in User.__dict__:
-                raise InvalidRequestError
-            for usr in all_users:
-                if getattr(usr, k) == v:
-                    return usr
-        raise NoResultFound
+        if not kwargs or any(x not in VALID_FIELDS for x in kwargs):
+            raise InvalidRequestError
+        session = self._session
+        try:
+            return session.query(User).filter_by(**kwargs).one()
+        except Exception:
+            raise NoResultFound
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """
         Update user attributes based on keyword arguments.
-
-        Args:
-            user_id (int): ID of the user to update.
-            **kwargs: Arbitrary keyword arguments for updating usr
-
-        Raises:
-            ValueError
         """
+        session = self._session
         user = self.find_user_by(id=user_id)
-        for key, value in kwargs.items():
-            if hasattr(user, key):
-                setattr(user, key, value)
-            else:
-                raise ValueError(f"Invalid argument: {key}")
-        self._session.commit()
+        for k, v in kwargs.items():
+            if k not in VALID_FIELDS:
+                raise ValueError
+            setattr(user, k, v)
+        session.commit()
