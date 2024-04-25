@@ -45,22 +45,26 @@ class DB:
         """
         Find a user by given keyword arguments.
         """
-        if not kwargs or any(x not in VALID_FIELDS for x in kwargs):
-            raise InvalidRequestError
-        session = self._session
-        try:
-            return session.query(User).filter_by(**kwargs).one()
-        except Exception:
-            raise NoResultFound
+        users = self._session.query(User)
+        for key, value in kwargs.items():
+            if key not in User.__dict__:
+                raise InvalidRequestError
+            for user in users:
+                if getattr(user, key) == value:
+                    return user
+                raise NoResultFound
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """
         Update user attributes based on keyword arguments.
         """
-        session = self._session
-        user = self.find_user_by(id=user_id)
-        for k, v in kwargs.items():
-            if k not in VALID_FIELDS:
+        try:
+            id = user_id
+            users = self.find_user_by(id=user_id)
+        except Exception:
+            raise ValueError
+        for key, value in kwargs.items():
+            if hasattr(users, key):
+                setattr(users, key, value)
+            else:
                 raise ValueError
-            setattr(user, k, v)
-        session.commit()
